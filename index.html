@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кто хочет стать миллионером - Instinct Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #0d1b2a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #1b263b;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header {
+            background-color: #415a77;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #e0e1dd;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #e0e1dd;
+        }
+        
+        .header .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-area {
+            padding: 20px;
+        }
+        
+        .question-container {
+            background-color: #0d1b2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #415a77;
+        }
+        
+        .question {
+            font-size: 18px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .money-display {
+            text-align: center;
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .answers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .answer {
+            background-color: #415a77;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+            font-size: 16px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        
+        .answer:hover {
+            background-color: #778da9;
+        }
+        
+        .answer.correct {
+            background-color: #4caf50;
+        }
+        
+        .answer.incorrect {
+            background-color: #f44336;
+        }
+        
+        .answer.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .answer-letter {
+            background-color: #0d1b2a;
+            color: #e0e1dd;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .lifelines {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        
+        .lifeline {
+            background-color: #415a77;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .lifeline:hover {
+            background-color: #778da9;
+        }
+        
+        .lifeline:disabled {
+            background-color: #778da9;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .money-ladder {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #1b263b;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 5px;
+        }
+        
+        .money-step {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: right;
+        }
+        
+        .money-step.current {
+            background-color: #ffd700;
+            color: #0d1b2a;
+            font-weight: bold;
+        }
+        
+        .money-step.milestone {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .result-screen {
+            text-align: center;
+            padding: 40px 20px;
+            display: none;
+        }
+        
+        .result-screen h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+        
+        .result-screen p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .restart-btn {
+            background-color: #ffd700;
+            color: #0d1b2a;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .restart-btn:hover {
+            background-color: #ffea00;
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 1200px) {
+            .money-ladder {
+                position: static;
+                transform: none;
+                margin-top: 20px;
+                width: 100%;
+                max-width: 800px;
+            }
+            
+            .money-step {
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .answers {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .header .logo {
+                font-size: 26px;
+            }
+        }
+        
+        .start-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .start-screen h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+        
+        .start-screen p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .start-btn {
+            background-color: #ffd700;
+            color: #0d1b2a;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .start-btn:hover {
+            background-color: #ffea00;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Кто хочет стать миллионером</h1>
+            <div class="logo">Instinct Edition</div>
+        </div>
+        
+        <div class="start-screen" id="startScreen">
+            <h2>Добро пожаловать в игру!</h2>
+            <p>Проверьте свои знания о креативном агентстве Instinct и выиграйте миллион!</p>
+            <button class="start-btn" id="startBtn">Начать игру</button>
+        </div>
+        
+        <div class="game-area" id="gameArea" style="display: none;">
+            <div class="money-display" id="moneyDisplay">0 ₽</div>
+            
+            <div class="lifelines">
+                <button class="lifeline" id="fifty">50/50</button>
+                <button class="lifeline" id="audience">Помощь зала</button>
+                <button class="lifeline" id="friend">Звонок другу</button>
+            </div>
+            
+            <div class="question-container">
+                <div class="question" id="question">Вопрос будет здесь</div>
+                <div class="answers" id="answers">
+                    <button class="answer" data-index="0">
+                        <span class="answer-letter">A</span>
+                        <span class="answer-text">Ответ A</span>
+                    </button>
+                    <button class="answer" data-index="1">
+                        <span class="answer-letter">B</span>
+                        <span class="answer-text">Ответ B</span>
+                    </button>
+                    <button class="answer" data-index="2">
+                        <span class="answer-letter">C</span>
+                        <span class="answer-text">Ответ C</span>
+                    </button>
+                    <button class="answer" data-index="3">
+                        <span class="answer-letter">D</span>
+                        <span class="answer-text">Ответ D</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="result-screen" id="resultScreen">
+            <h2 id="resultTitle">Поздравляем!</h2>
+            <p id="resultText">Вы выиграли 1,000,000 ₽!</p>
+            <button class="restart-btn" id="restartBtn">Играть снова</button>
+        </div>
+    </div>
+    
+    <div class="money-ladder" id="moneyLadder">
+        <!-- Будет заполнено с помощью JavaScript -->
+    </div>
+
+    <script>
+        // Данные для игры
+        const moneyLadder = [
+            100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 250000, 500000, 1000000
+        ];
+        
+        const milestones = [4, 9, 14]; // Индексы гарантированных сумм (5-й, 10-й и 15-й вопросы)
+        
+        const questions = [
+            {
+                question: "В каком году было основано креативное агентство Instinct?",
+                answers: ["2003", "2005", "2007", "2010"],
+                correct: 0
+            },
+            {
+                question: "Какая компания является материнской для Instinct?",
+                answers: ["BBDO Group", "Publicis Groupe", "WPP", "Omnicom Group"],
+                correct: 0
+            },
+            {
+                question: "Какой известный слоган был создан агентством Instinct для бренда Snickers?",
+                answers: ["Ты не ты, когда голоден", "Иногда лучше жевать, чем говорить", "Райское наслаждение", "Сделай паузу - съешь Twix"],
+                correct: 0
+            },
+            {
+                question: "За какую рекламную кампанию Instinct получило каннского льва в 2019 году?",
+                answers: ["The Untouchable Masterpieces для S7 Airlines", "Taste the Translation для KFC", "Beware of Bots для Kaspersky", "The Last Word для Dove"],
+                correct: 0
+            },
+            {
+                question: "Кто является креативным директором агентства Instinct?",
+                answers: ["Роман Фирайнер", "Ярослав Орлов", "Юрий Коробейников", "Александр Загорский"],
+                correct: 1
+            },
+            {
+                question: "Какой бренд НЕ является клиентом агентства Instinct?",
+                answers: ["Pepsi", "Mars", "Сбербанк", "IKEA"],
+                correct: 3
+            },
+            {
+                question: "Какая рекламная кампания Instinct для Сбербанка получила широкую известность в 2018 году?",
+                answers: ["Искусственный интеллект", "Спасибо от Сбербанка", "Большие данные", "Бизнес без купюр"],
+                correct: 0
+            },
+            {
+                question: "В каком городе находится главный офис агентства Instinct?",
+                answers: ["Москва", "Санкт-Петербург", "Екатеринбург", "Киев"],
+                correct: 0
+            },
+            {
+                question: "Какую награду получило агентство Instinct на фестивале Red Apple в 2020 году?",
+                answers: ["Гран-при", "Золото", "Серебро", "Бронзу"],
+                correct: 0
+            },
+            {
+                question: "Какой социальный проект был реализован агентством Instinct для фонда 'Подари жизнь'?",
+                answers: ["Выжить нельзя умереть", "Помоги и выиграй", "Жизнь в твоих руках", "Дети вместо цветов"],
+                correct: 0
+            },
+            {
+                question: "Какое второе агентство входит в группу Instinct вместе с основным?",
+                answers: ["Instinct Digital", "BBDO Instinct", "Instinct Media", "More"],
+                correct: 3
+            },
+            {
+                question: "Какая рекламная кампания Instinct для Mars получила награду Effie?",
+                answers: ["Snickers: Ты не ты, когда голоден", "M&M's: В любой непонятной ситуации", "Whiskas: Больше чем еда", "Pedigree: Собакам нужны люди"],
+                correct: 0
+            },
+            {
+                question: "Какой известный режиссер сотрудничал с Instinct для создания рекламы S7 Airlines?",
+                answers: ["Тимур Бекмамбетов", "Федор Бондарчук", "Андрей Звягинцев", "Юрий Быков"],
+                correct: 0
+            },
+            {
+                question: "Какой проект Instinct был отмечен на международном фестивале Cannes Lions в категории Design?",
+                answers: ["Пиксельная реклама для Coca-Cola", "Нейросеть для Сбербанка", "Untouchable Masterpieces для S7 Airlines", "Интерактивный билборд для Audi"],
+                correct: 2
+            },
+            {
+                question: "Какое место занимало агентство Instinct в рейтинге креативности АКАР в 2021 году?",
+                answers: ["Первое", "Второе", "Третье", "Четвертое"],
+                correct: 0
+            }
+        ];
+        
+        // Переменные состояния игры
+        let currentQuestionIndex = 0;
+        let currentMoneyIndex = 0;
+        let fiftyFiftyUsed = false;
+        let audienceHelpUsed = false;
+        let friendCallUsed = false;
+        let gameActive = true;
+        
+        // Элементы DOM
+        const startScreen = document.getElementById('startScreen');
+        const gameArea = document.getElementById('gameArea');
+        const resultScreen = document.getElementById('resultScreen');
+        const questionElement = document.getElementById('question');
+        const answersContainer = document.getElementById('answers');
+        const moneyDisplay = document.getElementById('moneyDisplay');
+        const moneyLadderElement = document.getElementById('moneyLadder');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultText = document.getElementById('resultText');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const fiftyFiftyBtn = document.getElementById('fifty');
+        const audienceHelpBtn = document.getElementById('audience');
+        const friendCallBtn = document.getElementById('friend');
+        
+        // Инициализация игры
+        function initGame() {
+            // Создание лестницы денег
+            createMoneyLadder();
+            
+            // Обработчики событий
+            startBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', resetGame);
+            fiftyFiftyBtn.addEventListener('click', useFiftyFifty);
+            audienceHelpBtn.addEventListener('click', useAudienceHelp);
+            friendCallBtn.addEventListener('click', useFriendCall);
+            
+            // Обработчики для ответов
+            const answerButtons = document.querySelectorAll('.answer');
+            answerButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (!gameActive) return;
+                    checkAnswer(parseInt(button.dataset.index));
+                });
+            });
+        }
+        
+        // Создание лестницы денег
+        function createMoneyLadder() {
+            moneyLadderElement.innerHTML = '';
+            
+            for (let i = moneyLadder.length - 1; i >= 0; i--) {
+                const moneyStep = document.createElement('div');
+                moneyStep.className = 'money-step';
+                if (milestones.includes(i)) {
+                    moneyStep.classList.add('milestone');
+                }
+                moneyStep.id = `money-step-${i}`;
+                moneyStep.textContent = `${i + 1}. ${moneyLadder[i].toLocaleString()} ₽`;
+                moneyLadderElement.appendChild(moneyStep);
+            }
+        }
+        
+        // Начало игры
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameArea.style.display = 'block';
+            loadQuestion();
+            updateMoneyDisplay();
+            updateMoneyLadder();
+        }
+        
+        // Загрузка вопроса
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            questionElement.textContent = currentQuestion.question;
+            
+            const answerButtons = document.querySelectorAll('.answer');
+            answerButtons.forEach((button, index) => {
+                button.classList.remove('correct', 'incorrect', 'disabled');
+                button.querySelector('.answer-text').textContent = currentQuestion.answers[index];
+                button.disabled = false;
+            });
+        }
+        
+        // Проверка ответа
+        function checkAnswer(selectedIndex) {
+            gameActive = false;
+            const currentQuestion = questions[currentQuestionIndex];
+            const answerButtons = document.querySelectorAll('.answer');
+            
+            // Показываем правильный ответ
+            setTimeout(() => {
+                answerButtons[currentQuestion.correct].classList.add('correct');
+                
+                if (selectedIndex !== currentQuestion.correct) {
+                    answerButtons[selectedIndex].classList.add('incorrect');
+                    
+                    // Игрок ответил неправильно
+                    setTimeout(() => {
+                        endGame(false);
+                    }, 2000);
+                } else {
+                    // Игрок ответил правильно
+                    setTimeout(() => {
+                        currentMoneyIndex = currentQuestionIndex;
+                        currentQuestionIndex++;
+                        
+                        if (currentQuestionIndex >= questions.length) {
+                            // Игрок выиграл игру
+                            endGame(true);
+                        } else {
+                            // Переход к следующему вопросу
+                            gameActive = true;
+                            loadQuestion();
+                            updateMoneyDisplay();
+                            updateMoneyLadder();
+                        }
+                    }, 2000);
+                }
+            }, 1000);
+        }
+        
+        // Обновление отображения денег
+        function updateMoneyDisplay() {
+            moneyDisplay.textContent = `${moneyLadder[currentMoneyIndex].toLocaleString()} ₽`;
+        }
+        
+        // Обновление лестницы денег
+        function updateMoneyLadder() {
+            const moneySteps = document.querySelectorAll('.money-step');
+            moneySteps.forEach(step => step.classList.remove('current'));
+            
+            const currentStep = document.getElementById(`money-step-${currentQuestionIndex}`);
+            if (currentStep) {
+                currentStep.classList.add('current');
+            }
+        }
+        
+        // Завершение игры
+        function endGame(won) {
+            gameArea.style.display = 'none';
+            resultScreen.style.display = 'block';
+            
+            if (won) {
+                resultTitle.textContent = 'Поздравляем!';
+                resultText.textContent = `Вы выиграли ${moneyLadder[moneyLadder.length - 1].toLocaleString()} ₽!`;
+            } else {
+                resultTitle.textContent = 'Игра окончена!';
+                
+                // Определение гарантированной суммы
+                let guaranteedMoneyIndex = -1;
+                for (let i = milestones.length - 1; i >= 0; i--) {
+                    if (currentMoneyIndex >= milestones[i]) {
+                        guaranteedMoneyIndex = milestones[i];
+                        break;
+                    }
+                }
+                
+                if (guaranteedMoneyIndex >= 0) {
+                    resultText.textContent = `Вы выиграли ${moneyLadder[guaranteedMoneyIndex].toLocaleString()} ₽!`;
+                } else {
+                    resultText.textContent = 'К сожалению, вы ничего не выиграли.';
+                }
+            }
+        }
+        
+        // Сброс игры
+        function resetGame() {
+            currentQuestionIndex = 0;
+            currentMoneyIndex = 0;
+            fiftyFiftyUsed = false;
+            audienceHelpUsed = false;
+            friendCallUsed = false;
+            gameActive = true;
+            
+            fiftyFiftyBtn.disabled = false;
+            audienceHelpBtn.disabled = false;
+            friendCallBtn.disabled = false;
+            
+            resultScreen.style.display = 'none';
+            startScreen.style.display = 'block';
+        }
+        
+        // Подсказка 50/50
+        function useFiftyFifty() {
+            if (fiftyFiftyUsed || !gameActive) return;
+            
+            fiftyFiftyUsed = true;
+            fiftyFiftyBtn.disabled = true;
+            
+            const currentQuestion = questions[currentQuestionIndex];
+            const correctIndex = currentQuestion.correct;
+            const answerButtons = document.querySelectorAll('.answer');
+            
+            // Выбираем два неправильных ответа для удаления
+            let indicesToRemove = [];
+            for (let i = 0; i < 4; i++) {
+                if (i !== correctIndex) {
+                    indicesToRemove.push(i);
+                }
+            }
+            
+            // Случайным образом выбираем один неправильный ответ, который останется
+            const keepIndex = Math.floor(Math.random() * indicesToRemove.length);
+            indicesToRemove.splice(keepIndex, 1);
+            
+            // Скрываем два неправильных ответа
+            indicesToRemove.forEach(index => {
+                answerButtons[index].classList.add('disabled');
+                answerButtons[index].disabled = true;
+            });
+        }
+        
+        // Подсказка "Помощь зала"
+        function useAudienceHelp() {
+            if (audienceHelpUsed || !gameActive) return;
+            
+            audienceHelpUsed = true;
+            audienceHelpBtn.disabled = true;
+            
+            const currentQuestion = questions[currentQuestionIndex];
+            const correctIndex = currentQuestion.correct;
+            
+            // Генерируем проценты для каждого варианта ответа
+            let percentages = [10, 20, 30, 40];
+            
+            // Перемешиваем проценты
+            for (let i = percentages.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [percentages[i], percentages[j]] = [percentages[j], percentages[i]];
+            }
+            
+            // Делаем так, чтобы правильный ответ имел наибольший процент
+            const maxPercentage = Math.max(...percentages);
+            const maxIndex = percentages.indexOf(maxPercentage);
+            
+            if (maxIndex !== correctIndex) {
+                [percentages[maxIndex], percentages[correctIndex]] = [percentages[correctIndex], percentages[maxIndex]];
+            }
+            
+            // Показываем результаты голосования
+            alert(`Результаты голосования зала:
+A: ${percentages[0]}%
+B: ${percentages[1]}%
+C: ${percentages[2]}%
+D: ${percentages[3]}%`);
+        }
+        
+        // Подсказка "Звонок другу"
+        function useFriendCall() {
+            if (friendCallUsed || !gameActive) return;
+            
+            friendCallUsed = true;
+            friendCallBtn.disabled = true;
+            
+            const currentQuestion = questions[currentQuestionIndex];
+            const correctIndex = currentQuestion.correct;
+            const letters = ['A', 'B', 'C', 'D'];
+            
+            // Определяем, даст ли друг правильный ответ (с вероятностью 80%)
+            const isCorrect = Math.random() < 0.8;
+            
+            let friendAnswer;
+            if (isCorrect) {
+                friendAnswer = correctIndex;
+            } else {
+                // Выбираем случайный неправильный ответ
+                let wrongAnswers = [0, 1, 2, 3].filter(i => i !== correctIndex);
+                friendAnswer = wrongAnswers[Math.floor(Math.random() * wrongAnswers.length)];
+            }
+            
+            // Показываем ответ друга
+            alert(`Ваш друг думает, что правильный ответ: ${letters[friendAnswer]}`);
+        }
+        
+        // Инициализация игры при загрузке страницы
+        window.onload = initGame;
+    </script>
+</body>
+</html>
